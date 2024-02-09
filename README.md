@@ -1,1 +1,3 @@
-# Newton-Fractal-C--Implementation
+# Newton-Fractal-Cpp--Implementation
+
+We use C++ to implement Newton Fractal
