@@ -1,7 +1,8 @@
-#include "HeaderFile.hpp"
+#include "NewtonFractal.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#include <cstring>
 using namespace std;
 
 //***********************************************//
@@ -9,54 +10,50 @@ using namespace std;
 //***********************************************//
 double& Complex::operator[](const char* realOrnot)
 {
-	if (realOrnot == "real")
+	if (!strcmp(realOrnot,"real"))
 	{
-		real = 0.0;
 		return real;
 	}
-	else if (realOrnot == "imag")
+	else if (!strcmp(realOrnot, "imag"))
 	{
-		imag = 0.0;
 		return imag;
 	}
-}
-
-Complex::InputOutOfBoundsException::InputOutOfBoundsException(const char* error, const char* index) : errorMessage(error), offendingIndex(index)
-{}
-
-const char* Complex::InputOutOfBoundsException::returnError()
-{
-	return errorMessage;
-}
-
-const char* Complex::InputOutOfBoundsException::returnOffendingIndex()
-{
-	return offendingIndex;
+	else
+		throw invalid_argument("Invalid argument");
 }
 
 Complex::Complex() : real(0.0), imag(0.0)
-{}
+{
+	cout << "> Complex default constructor called" << endl;
+}	
 
 Complex::Complex(const Complex& cp)
 {
+	cout << "> complex copy constructor called" << endl;
 	real = cp.real;
 	imag = cp.imag;
 }
 
 Complex::Complex(double a)
 {
+	cout << "> complex one-arg constructor called" << endl;
 	real = a;
 	imag = a;
 }
 
 Complex::Complex(double a, double b) : real(a), imag(b)
-{}
+{
+	cout << "> Complex two-arg constructor called" << endl;
+}
 
 Complex::~Complex()
-{}
+{
+	cout << "> Complex destructor called";
+}
 
 const Complex operator*(const Complex& cp1, const Complex& cp2)
 {
+	cout << "> Operator * called" << endl;
 	Complex temp;
 	temp.real = cp1.real * cp2.real - cp1.imag * cp2.imag;
 	temp.imag = cp1.real * cp2.imag + cp1.imag * cp2.real;
@@ -65,6 +62,7 @@ const Complex operator*(const Complex& cp1, const Complex& cp2)
 
 const Complex operator/(const Complex& cp1, const Complex& cp2)
 {
+	cout << "> Operator / called" << endl;
 	Complex temp;
 	temp.real = (cp1.real * cp2.real + cp1.imag * cp2.imag) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
 	temp.imag = (cp1.imag * cp2.real - cp1.real * cp2.imag) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
@@ -73,14 +71,16 @@ const Complex operator/(const Complex& cp1, const Complex& cp2)
 
 const Complex operator+(const Complex& cp1, const Complex& cp2)
 {
+	cout << "> Operator + called" << endl;
 	Complex temp;
 	temp.real = cp1.real + cp2.real;
 	temp.imag = cp2.imag + cp1.imag;
 	return temp;
 }
 
-const Complex operator+(const Complex& cp1, const Complex& cp2)
+const Complex operator-(const Complex& cp1, const Complex& cp2)
 {
+	cout << "> Operator - called" << endl;
 	Complex temp;
 	temp.real = cp1.real - cp2.real;
 	temp.imag = cp2.imag - cp1.imag;
@@ -89,6 +89,7 @@ const Complex operator+(const Complex& cp1, const Complex& cp2)
 
 double getMagnitude(const Complex& cp)
 {
+	cout << "> Get magnitude called" << endl;
 	double m = cp.real * cp.real + cp.imag * cp.imag;
 	return sqrt(m);
 }
@@ -99,27 +100,43 @@ double getMagnitude(const Complex& cp)
 //***********************************************//
 
 Pixel::~Pixel()
-{}
+{
+	cout << "> Pixel destructor called" << endl;
+}
 
 const unsigned int& Pixel::operator[](const char* color)
 {
-	if (color == "red")
+	cout << "> operator[] called for pixel" << endl;
+	if (!strcmp(color, "red"))
 	{
 		return red;
 	}
-	else if (color == "green")
+	else if (!strcmp(color, "green"))
 	{
+		cout << "";
 		return green;
 	}
-	else
+	else if (!strcmp(color, "blue"))
+	{
 		return blue;
+	}
+	else
+		throw invalid_argument("Invalid argument");
+	 
+
 }
 
-Pixel::Pixel() : red(0), green(0), blue(0)
-{}
+Pixel::Pixel()
+{
+	red = 0;
+	green = 0;
+	blue = 0;
+	cout << "> Pixel default constructor called" << endl;
+}
 
 Pixel::Pixel(const Pixel& p)
 {
+	cout << "> pixel copy constructor called" << endl;
 	red = p.red;
 	green = p.green;
 	blue = p.blue;
@@ -127,21 +144,12 @@ Pixel::Pixel(const Pixel& p)
 
 Pixel::Pixel(unsigned int r, unsigned int g, unsigned int b)
 {
+	cout << "> pixel three-arg constructor called" << endl;
 	red = r;
 	green = g;
 	blue = b;
 }
-ostream& operator<<(ostream& os, const Pixel& p)
-{
-	fstream filePPM("file.ppm", ios::out);
-	if (filePPM.fail())
-	{
-		cout << "Fail opening the file" << endl;
-	}
-	else
-		filePPM << p.red << p.green << p.blue;
-	return os;
-}
+
 
 //***********************************************//
 //  Implementation of the Fractal class          //
@@ -150,6 +158,11 @@ ostream& operator<<(ostream& os, const Pixel& p)
 Fractal::~Fractal()
 {
 	cout << "> Destructor called" << endl;
+	for (unsigned int i = 0; i < rows; i++)
+	{
+		delete[] grid[i];
+		grid[i] = nullptr;
+	}
 	delete[] grid;
 	grid = nullptr;
 }
@@ -159,11 +172,13 @@ Pixel Fractal::determinePixelColor(Complex cp)
 	double tol = 1E-4, diff = 1.0, test = 0.58974;
 	unsigned int iter = 0, color = 0;
 	Complex Znew;
-
+	Complex Ztemp;
 	while (iter < 512)
 	{
 		iter++;
-		Znew = cp - ((cp * cp * cp) - (2.0 * cp) + 2.0) / ((3.0 * cp * cp) - 2.0);
+		Ztemp["real"] = 1;
+		Ztemp["imag"] = 0;
+		Znew = cp - ((cp * cp * cp) - ((2.0*Ztemp["real"]) * cp) + 2.0*Ztemp["real"]) / ((3.0*Ztemp["real"] * cp * cp) - 2.0*Ztemp["real"]);
 		diff = getMagnitude(cp - Znew);
 		cp = Znew;
 		if (diff < tol)
@@ -184,13 +199,13 @@ Pixel Fractal::determinePixelColor(Complex cp)
 		}
 	}
 	return Pixel(0, 0, 0);
-} 
+}
 
-Fractal::Fractal() :maxIter(30)
+Fractal::Fractal() :maxIter(30), rows(30), cols(30)
 {
-	cout << "> Default constructor called"<<endl;
-	grid = new Pixel*[rows];
-	for (int i = 0; i < rows; i++)
+	cout << "> Default constructor called" << endl;
+	grid = new Pixel * [rows];
+	for (unsigned int i = 0; i < rows; i++)
 	{
 		grid[i] = new Pixel[cols];
 	}
@@ -210,53 +225,50 @@ Fractal::Fractal(const Fractal& f)
 			grid[i][j] = f.grid[i][j];
 		}
 	}
-	this->makeNewtonFractal();
 }
 
 // Move constructor
 
-Fractal::Fractal(Fractal&& f)
+Fractal::Fractal(Fractal&& f) 
 {
 	cout << "> Move constructor called" << endl;
 	grid = f.grid;
+	f.grid = nullptr;
 	rows = f.rows;
 	cols = f.cols;
-	grid = new Pixel* [rows];
-	for (unsigned int i = 0; i < rows; i++)
-	{
-		grid[i] = new Pixel[cols];
-		for (unsigned int j = 0; j < cols; j++)
-		{
-			grid[i][j] = f.grid[i][j];
-		}
-	}
-	f.grid = nullptr;
+	maxIter = f.maxIter;
 	f.rows = 0;
 	f.cols = 0;
-	this->makeNewtonFractal();
+	f.maxIter = 30;
 }
 
-Fractal::Fractal(unsigned int r, unsigned int c)
+Fractal::Fractal(unsigned int r, unsigned int c) : maxIter(30)
 {
 	cout << "> Two-arg constructor called" << endl;
 	rows = r;
 	cols = c;
+	int count = 0;
 	grid = new Pixel * [rows];
 	for (unsigned int i = 0; i < rows; i++)
 	{
 		grid[i] = new Pixel[cols];
+		count++;
+		cout << count << endl;
 	}
+	
 	this->makeNewtonFractal();
 }
 
 const Fractal& Fractal::operator=(const Fractal& f)
 {
+	cout << "> Assignment operator called" << endl;
 	if (this != &f)
 	{
 		if (f.grid != nullptr)
 		{
 			this->rows = f.rows;
 			this->cols = f.cols;
+			this->maxIter = f.maxIter;
 			grid = new Pixel * [rows];
 			for (unsigned int i = 0; i < rows; i++)
 			{
@@ -268,9 +280,10 @@ const Fractal& Fractal::operator=(const Fractal& f)
 			}
 		}
 	}
+	return (*this);
 }
 
-Fractal& Fractal::operator=(Fractal&& f)
+Fractal& Fractal::operator=(Fractal&& f) 
 {
 	cout << "> Move assignment operator called" << endl;
 	if (this != &f)
@@ -278,6 +291,7 @@ Fractal& Fractal::operator=(Fractal&& f)
 		swap(this->grid, f.grid);
 		swap(this->cols, f.cols);
 		swap(this->rows, f.rows);
+		swap(this->maxIter, f.maxIter);
 	}
 	return (*this);
 }
@@ -299,30 +313,32 @@ void Fractal::makeNewtonFractal()
 	}
 }
 
-Fractal Fractal::testMoveConstructor(unsigned int rows, unsigned int cols)
+
+fstream& operator<<(fstream& file, const Pixel& p)
 {
-	Fractal temp;
-	temp.rows = rows;
-	temp.cols = cols;
-	temp.grid = new Pixel*[rows];
-	for (unsigned int i = 0; i < rows; i++)
-	{
-		temp.grid[i] = new Pixel[cols];
-	}
-	return temp;
+	cout << "> operator << called" << endl;
+	file << p.red << p.green << p.blue;
+	
+	return file;
 }
 
 void saveToPPM(Fractal f, const char* name)
 {
 	cout << "> Saving Fractal object to PPM file" << endl;
-	ofstream dataFile(name, ios::out);
-	for (unsigned int i = 0; i < f.rows; i++)
+	fstream dataFile(name, ios::out);
+	if (dataFile.fail())
 	{
-		for (unsigned int j = 0; j < f.cols; j++)
+		cout << "Fail opening the file" << endl;
+	}
+	else
+	{ 
+		for (unsigned int i = 0; i < f.rows; i++)
 		{
-			dataFile << f.grid[i][j];
+			for (unsigned int j = 0; j < f.cols; j++)
+			{
+				dataFile << f.grid[i][j];
+			}
 		}
 	}
 }
-
 
