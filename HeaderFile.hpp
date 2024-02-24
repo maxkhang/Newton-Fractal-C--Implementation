@@ -5,7 +5,8 @@ using namespace std;
 class Complex
 {
 private:
-	double real, imag;
+	double real;
+	double imag;
 public:
 	~Complex();
 	Complex();
@@ -13,16 +14,6 @@ public:
 	Complex(double);
 	Complex(double, double);
 	double& operator[](const char*);
-	class InputOutOfBoundsException
-	{
-	private:
-		const char* errorMessage;
-		const char*	offendingIndex;
-	public:
-		InputOutOfBoundsException(const char*, const char*);
-		const char* returnError();
-		const char* returnOffendingIndex();
-	};
 	friend const Complex operator*(const Complex&, const Complex&);
 	friend const Complex operator/(const Complex&, const Complex&);
 	friend const Complex operator+(const Complex&, const Complex&);
@@ -33,47 +24,38 @@ public:
 class Pixel
 {
 private:
-	unsigned int blue, green, red;
+	unsigned int blue;
+	unsigned int green;
+	unsigned int red;
 public:
 	~Pixel();
 	const unsigned int& operator[](const char*);
 	Pixel();
 	Pixel(const Pixel&);
 	Pixel(unsigned int, unsigned int, unsigned int);
-	
-	friend ostream& operator<<(ostream& os, const Pixel&);
 
-	class InputOutOfBoundsException
-	{
-	private:
-		const char* errorMessage;
-		const char* offendingIndex;
-	public:
-		InputOutOfBoundsException(const char*, const char*);
-		const char* returnError();
-		const char* returnOffendingIndex();
-	};
+	friend fstream& operator<<(fstream& file, const Pixel&);
+
 };
 
 class Fractal
 {
 private:
-	unsigned int cols;
-	Pixel** grid;
-	unsigned int maxIter;
 	unsigned int rows;
+	unsigned int cols;
+	unsigned int maxIter;
+	Pixel** grid;
 	Pixel determinePixelColor(Complex);
-	void makeNewtonFractal();
-public:
-	~Fractal();
 	
+public:
+	void makeNewtonFractal();
+	~Fractal();
 	Fractal();
 	Fractal(const Fractal&);
 	Fractal(Fractal&&);
 	Fractal(unsigned int, unsigned int);
-	Fractal testMoveConstructor(unsigned int rows, unsigned int cols);
 	const Fractal& operator=(const Fractal&);
 	Fractal& operator= (Fractal&&);
 	friend void saveToPPM(Fractal, const char*);
-};
 
+};
