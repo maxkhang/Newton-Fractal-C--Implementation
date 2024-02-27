@@ -2,9 +2,14 @@
 #include <iostream>
 
 
+Fractal testMoveConstructor(unsigned int row, unsigned int col)
+{
+	return Fractal(row, col);
+}
+
 int main()
 {
-	Fractal m1(2000U, 2000U), m2, m3;
+	Fractal m1(20U, 20U), m2, m3;
 	saveToPPM(m1, "newton1.ppm");
 
 	m2 = Fractal(m1);

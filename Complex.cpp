@@ -1,6 +1,5 @@
-#include "NewtonFractal.hpp"
+#include "HeaderFile.hpp"
 #include <iostream>
-#include <stdexcept>
 #include <fstream>
 #include <cstring>
 using namespace std;
@@ -10,22 +9,46 @@ using namespace std;
 //***********************************************//
 double& Complex::operator[](const char* realOrnot)
 {
-	if (!strcmp(realOrnot,"real"))
+	try
 	{
-		return real;
+		if (strcmp(realOrnot, "real")) 
+		{
+			throw InputOutOfBoundsException("Yooo, it's definitely not real", realOrnot); 
+			return real;																	
+		}
+		else if (strcmp(realOrnot, "imag"))
+		{
+			throw InputOutOfBoundsException("Yooo, it's definitely not imag", realOrnot);
+			return imag;
+		}
+		return real, imag;
 	}
-	else if (!strcmp(realOrnot, "imag"))
+	catch (Complex::InputOutOfBoundsException& error)
 	{
-		return imag;
+		error.returnError();
+		error.returnOffendingIndex();
 	}
-	else
-		throw invalid_argument("Invalid argument");
 }
 
-Complex::Complex() : real(0.0), imag(0.0)
+Complex::InputOutOfBoundsException::InputOutOfBoundsException(const char* error, const char* index)
+{
+	errorMessage = error;
+	offendingIndex = index;
+}
+
+const char* Complex::InputOutOfBoundsException::returnError()
+{
+	return errorMessage;
+}
+
+const char* Complex::InputOutOfBoundsException::returnOffendingIndex()
+{
+	return offendingIndex;
+}
+Complex::Complex() : real(1.0), imag(1.0)
 {
 	cout << "> Complex default constructor called" << endl;
-}	
+}
 
 Complex::Complex(const Complex& cp)
 {
@@ -95,6 +118,8 @@ double getMagnitude(const Complex& cp)
 }
 
 
+
+
 //***********************************************//
 //  Implementation of the Pixel class            //
 //***********************************************//
@@ -107,23 +132,44 @@ Pixel::~Pixel()
 const unsigned int& Pixel::operator[](const char* color)
 {
 	cout << "> operator[] called for pixel" << endl;
-	if (!strcmp(color, "red"))
-	{
-		return red;
+	try {
+		if (strcmp(color, "red"))
+		{
+			throw InputOutOfBoundsException("It's not red", color);
+			return red;
+		}
+		else if (strcmp(color, "green"))
+		{
+			throw InputOutOfBoundsException("It's not green", color);
+			return green;
+		}
+		else if (strcmp(color, "blue"))
+		{
+			throw InputOutOfBoundsException("It's not blue", color);
+			return blue;
+		}
 	}
-	else if (!strcmp(color, "green"))
+	catch (InputOutOfBoundsException& error)
 	{
-		cout << "";
-		return green;
+		error.returnError();
+		error.returnOffendingIndex();
 	}
-	else if (!strcmp(color, "blue"))
-	{
-		return blue;
-	}
-	else
-		throw invalid_argument("Invalid argument");
-	 
+}
 
+Pixel::InputOutOfBoundsException::InputOutOfBoundsException(const char* error, const char* index)
+{
+	errorMessage = error;
+	offendingIndex = index;
+}
+
+const char* Pixel::InputOutOfBoundsException::returnError()
+{
+	return errorMessage;
+}
+
+const char* Pixel::InputOutOfBoundsException::returnOffendingIndex()
+{
+	return offendingIndex;
 }
 
 Pixel::Pixel()
@@ -178,7 +224,7 @@ Pixel Fractal::determinePixelColor(Complex cp)
 		iter++;
 		Ztemp["real"] = 1;
 		Ztemp["imag"] = 0;
-		Znew = cp - ((cp * cp * cp) - ((2.0*Ztemp["real"]) * cp) + 2.0*Ztemp["real"]) / ((3.0*Ztemp["real"] * cp * cp) - 2.0*Ztemp["real"]);
+		Znew = cp - ((cp * cp * cp) - ((2.0 * Ztemp["real"]) * cp) + 2.0 * Ztemp["real"]) / ((3.0 * Ztemp["real"] * cp * cp) - 2.0 * Ztemp["real"]);
 		diff = getMagnitude(cp - Znew);
 		cp = Znew;
 		if (diff < tol)
@@ -229,7 +275,7 @@ Fractal::Fractal(const Fractal& f)
 
 // Move constructor
 
-Fractal::Fractal(Fractal&& f) 
+Fractal::Fractal(Fractal&& f)
 {
 	cout << "> Move constructor called" << endl;
 	grid = f.grid;
@@ -255,7 +301,7 @@ Fractal::Fractal(unsigned int r, unsigned int c) : maxIter(30)
 		count++;
 		cout << count << endl;
 	}
-	
+
 	this->makeNewtonFractal();
 }
 
@@ -283,7 +329,7 @@ const Fractal& Fractal::operator=(const Fractal& f)
 	return (*this);
 }
 
-Fractal& Fractal::operator=(Fractal&& f) 
+Fractal& Fractal::operator=(Fractal&& f)
 {
 	cout << "> Move assignment operator called" << endl;
 	if (this != &f)
@@ -314,10 +360,28 @@ void Fractal::makeNewtonFractal()
 }
 
 
-fstream& operator<<(fstream& file, const Pixel& p)
+ofstream& operator<<(ofstream& file, const Pixel& p)
 {
-	cout << "> operator << called" << endl;
-	file << p.red << p.green << p.blue;
+	try {
+		if (p.red > 255 || p.red < 0)
+		{
+			throw Pixel::InputOutOfBoundsException("Color bounds [0, 255]", "Error appears at red");
+		}
+		else if (p.green > 255 || p.green < 0)
+		{
+			throw Pixel::InputOutOfBoundsException("Color bounds [0, 255]", "Error appears at green");
+		}
+		else if (p.blue > 255 || p.blue < 0)
+		{
+			throw Pixel::InputOutOfBoundsException("Color bounds [0, 255]", "Error appears at blue");
+		}
+		file << p.red << p.green << p.blue;
+	}
+	catch (Pixel::InputOutOfBoundsException& error)
+	{
+		error.returnError();
+		error.returnOffendingIndex();
+	}
 	
 	return file;
 }
@@ -325,13 +389,13 @@ fstream& operator<<(fstream& file, const Pixel& p)
 void saveToPPM(Fractal f, const char* name)
 {
 	cout << "> Saving Fractal object to PPM file" << endl;
-	fstream dataFile(name, ios::out);
+	ofstream dataFile(name, ios::out);
 	if (dataFile.fail())
 	{
 		cout << "Fail opening the file" << endl;
 	}
 	else
-	{ 
+	{
 		for (unsigned int i = 0; i < f.rows; i++)
 		{
 			for (unsigned int j = 0; j < f.cols; j++)
@@ -341,4 +405,3 @@ void saveToPPM(Fractal f, const char* name)
 		}
 	}
 }
-

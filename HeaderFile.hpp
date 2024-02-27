@@ -19,6 +19,16 @@ public:
 	friend const Complex operator+(const Complex&, const Complex&);
 	friend const Complex operator-(const Complex&, const Complex&);
 	friend double getMagnitude(const Complex&);
+	class InputOutOfBoundsException
+	{
+	private:
+		const char* errorMessage;
+		const char* offendingIndex;
+	public:
+		InputOutOfBoundsException(const char*, const char*);
+		const char* returnError();
+		const char* returnOffendingIndex();
+	};
 };
 
 class Pixel
@@ -34,8 +44,17 @@ public:
 	Pixel(const Pixel&);
 	Pixel(unsigned int, unsigned int, unsigned int);
 
-	friend fstream& operator<<(fstream& file, const Pixel&);
-
+	friend ofstream& operator<<(ofstream&, const Pixel&);
+	class InputOutOfBoundsException
+	{
+	private:
+		const char* errorMessage;
+		const char* offendingIndex;
+	public:
+		InputOutOfBoundsException(const char*, const char*);
+		const char* returnError();
+		const char* returnOffendingIndex();
+	};
 };
 
 class Fractal
@@ -46,9 +65,9 @@ private:
 	unsigned int maxIter;
 	Pixel** grid;
 	Pixel determinePixelColor(Complex);
-	
-public:
 	void makeNewtonFractal();
+public:
+	
 	~Fractal();
 	Fractal();
 	Fractal(const Fractal&);
