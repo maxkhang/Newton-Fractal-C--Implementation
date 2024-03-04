@@ -11,17 +11,16 @@ double& Complex::operator[](const char* realOrnot)
 {
 	try
 	{
-		if (strcmp(realOrnot, "real")) 
+		if (!strcmp(realOrnot, "real"))
 		{
 			return real;
-			throw InputOutOfBoundsException("Yooo, it's definitely not real", realOrnot); 
-																				
 		}
-		else if (strcmp(realOrnot, "imag"))
+		else if (!strcmp(realOrnot, "imag"))
 		{
 			return imag;
-			throw InputOutOfBoundsException("Yooo, it's definitely not imag", realOrnot);
 		}
+		else
+			throw InputOutOfBoundsException("Invalid input: ", realOrnot);
 		
 	}
 	catch (Complex::InputOutOfBoundsException& error)
@@ -83,8 +82,8 @@ const Complex operator*(const Complex& cp1, const Complex& cp2)
 {
 	//cout << "> Operator * called" << endl;
 	Complex temp;
-	temp.real = (cp1.real * cp2.real - cp1.imag * cp2.imag);
-	temp.imag = (cp1.real * cp2.imag + cp1.imag * cp2.real);
+	temp.real = (cp1.real * cp2.real) - (cp1.imag * cp2.imag);
+	temp.imag = (cp1.real * cp2.imag) + (cp1.imag * cp2.real);
 	return temp;
 	/*
 	temp.real = cp1.real * cp2.real - cp1.imag * cp2.imag;
@@ -96,8 +95,8 @@ const Complex operator/(const Complex& cp1, const Complex& cp2)
 {
 	//cout << "> Operator / called" << endl;
 	Complex temp;
-	temp.real = (cp1.real * cp2.real + cp1.imag * cp2.imag) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
-	temp.imag = (cp1.imag * cp2.real - cp1.real * cp2.imag) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
+	temp.real = ((cp1.real * cp2.real) + (cp1.imag * cp2.imag)) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
+	temp.imag = ((cp1.imag * cp2.real) - (cp1.real * cp2.imag)) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
 	return temp;
 	/*
 	temp.real = (cp1.real * cp2.real + cp1.imag * cp2.imag) / (cp2.real * cp2.real + cp2.imag * cp2.imag);
@@ -122,15 +121,17 @@ const Complex operator-(const Complex& cp1, const Complex& cp2)
 {
 	//cout << "> Operator - called" << endl;
 	Complex temp;
+	//cout << cp1.real << " + " << cp1.imag << "i" << " - " << cp2.real << " + " << cp2.imag << "i" << endl;
 	temp.real = cp1.real - cp2.real;
-	temp.imag = cp2.imag - cp1.imag;
+	temp.imag = cp1.imag - cp2.imag;
+	//cout << temp.real << " + " << temp.imag << "i" << endl;
 	return temp;
 }
 
 double getMagnitude(const Complex& cp)
 {
 	//cout << "> Get magnitude called" << endl;
-	double m = cp.real * cp.real + cp.imag * cp.imag;
+	double m = (cp.real * cp.real) + (cp.imag * cp.imag);
 	return sqrt(m);
 }
 

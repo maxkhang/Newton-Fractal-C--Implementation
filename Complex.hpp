@@ -4,7 +4,7 @@ using namespace std;
 
 class Complex
 {
-private:
+public:
 	double real;
 	double imag;
 public:
