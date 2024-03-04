@@ -23,6 +23,6 @@ public:
 	Fractal(unsigned int, unsigned int);
 	const Fractal& operator=(const Fractal&);
 	Fractal& operator= (Fractal&&);
-	friend void saveToPPM(Fractal, const char*);
+	friend void saveToPPM(const Fractal&, const char*);
 
 };
