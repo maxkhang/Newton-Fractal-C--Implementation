@@ -78,7 +78,7 @@ Fractal::Fractal(unsigned int r, unsigned int c) : maxIter(30)
 	cout << "> Two-arg constructor called" << endl;
 	rows = r;
 	cols = c;
-	int count = 0;
+	//int count = 0;
 	grid = new Pixel * [rows];
 	for (unsigned int i = 0; i < rows; i++)
 	{
@@ -132,11 +132,11 @@ void Fractal::makeNewtonFractal()
 	}
 }
 
-Pixel Fractal::determinePixelColor(Complex cp)
+Pixel Fractal::determinePixelColor(Complex& cp)
 {
 	double tol = 1E-4, diff = 1.0, test = 0.58974;
-	//cout << "This is tol: " << tol << endl;
 	unsigned int iter = 0, color = 0;
+
 	Complex Znew;
 
 	while (iter < 512)
@@ -145,19 +145,10 @@ Pixel Fractal::determinePixelColor(Complex cp)
 		Znew = cp - ((cp * cp * cp) - (2.0 * cp) + 2) / ((3.0 * cp * cp) - 2.0);
 		diff = getMagnitude(cp - Znew);
 		cp = Znew;
-		//cout << cp.real << " + (" << cp.imag << "i)" << endl;
-		//cout <<  diff << endl;
-
-		/*Znew = cp - ((cp * cp * cp) - ((2.0 * cp) + 2.0)) / ((3.0 * cp * cp) - 2.0);
-		diff = getMagnitude(cp - Znew);
-		cout << diff << endl;
-		cout << getMagnitude(cp - ((cp * cp * cp) - ((2.0 * cp) + 2.0)))<<endl;
-		cp = Znew;
-		*/
-		//cout << "Diff: "<< diff << endl;
 		if (diff < tol)
 		{
-			color = maxIter - min(iter, maxIter);
+			color = maxIter - min(maxIter,iter);
+			
 			if (abs(cp.imag) < tol)
 			{
 				//	cout << "color first: " << color;
@@ -189,7 +180,7 @@ void saveToPPM(const Fractal& f, const char* name)
 	}
 	else
 	{
-		dataFile << "P3" << endl << "# The Newton's Fractal" << endl << f.rows << " " << f.cols << endl << 255 << endl;
+		dataFile << "P3" << endl << "# The Newton's Fractal" << endl << f.rows << " " << f.cols << endl << 25 << endl;
 		for (unsigned int i = 0; i < f.rows; i++)
 		{
 			for (unsigned int j = 0; j < f.cols; j++)
@@ -199,4 +190,5 @@ void saveToPPM(const Fractal& f, const char* name)
 			dataFile << endl;
 		}
 	}
+	dataFile.close();
 }

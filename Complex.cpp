@@ -7,6 +7,14 @@ using namespace std;
 //***********************************************//
 //  Implementation of the Complex class          //
 //***********************************************//
+Complex& Complex::operator=(const Complex& cp)
+{
+	this->imag = cp.imag;
+	this->real = cp.real;
+	
+	return (*this);
+}
+
 double& Complex::operator[](const char* realOrnot)
 {
 	try
@@ -63,7 +71,7 @@ Complex::Complex(double a)
 {
 	//cout << "> complex one-arg constructor called" << endl;
 	this->real = a;
-	this->imag = a;
+	this->imag = 0;
 }
 
 Complex::Complex(double a, double b) 

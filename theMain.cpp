@@ -12,7 +12,7 @@ Fractal testMoveConstructor(unsigned int row, unsigned int col)
 
 int main()
 {
-	Fractal m1(600U, 800U), m2, m3;
+	Fractal m1(2000U, 2000U), m2, m3;
 	saveToPPM(m1, "newton1.ppm");
 	/*Complex a(6, 5);
 	Complex b(2, 2);

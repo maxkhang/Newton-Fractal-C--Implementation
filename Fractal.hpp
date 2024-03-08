@@ -12,7 +12,7 @@ private:
 	unsigned int cols;
 	unsigned int maxIter;
 	Pixel** grid;
-	Pixel determinePixelColor(Complex);
+	Pixel determinePixelColor(Complex&);
 	void makeNewtonFractal();
 public:
 
