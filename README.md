@@ -1,3 +1,5 @@
 # Newton-Fractal-Cpp--Implementation
 
-We use C++ to implement Newton Fractal
+This project is about making a fractal based on Newton's method of approximating/finding the roots of a function.
+
+
