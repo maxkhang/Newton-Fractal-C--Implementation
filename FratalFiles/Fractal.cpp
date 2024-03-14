@@ -132,7 +132,7 @@ void Fractal::makeNewtonFractal()
 	}
 }
 
-Pixel Fractal::determinePixelColor(Complex& cp)
+Pixel Fractal::determinePixelColor(Complex cp)
 {
 	double tol = 1E-4, diff = 1.0, test = 0.58974;
 	unsigned int iter = 0, color = 0;
@@ -142,12 +142,12 @@ Pixel Fractal::determinePixelColor(Complex& cp)
 	while (iter < 512)
 	{
 		iter++;
-		Znew = cp - ((cp * cp * cp) - (2.0 * cp) + 2) / ((3.0 * cp * cp) - 2.0);
+		Znew = cp - ((cp * cp * cp) - (2.0 * cp) + 2.0) / ((3.0 * cp * cp) - 2.0);
 		diff = getMagnitude(cp - Znew);
 		cp = Znew;
 		if (diff < tol)
 		{
-			color = maxIter - min(maxIter,iter);
+			color = maxIter - min(iter, maxIter);
 			
 			if (abs(cp.imag) < tol)
 			{
@@ -180,7 +180,7 @@ void saveToPPM(const Fractal& f, const char* name)
 	}
 	else
 	{
-		dataFile << "P3" << endl << "# The Newton's Fractal" << endl << f.rows << " " << f.cols << endl << 25 << endl;
+		dataFile << "P3" << endl << "# The Newton's Fractal" << endl << f.rows << " " << f.cols << endl << 30 << endl;
 		for (unsigned int i = 0; i < f.rows; i++)
 		{
 			for (unsigned int j = 0; j < f.cols; j++)
