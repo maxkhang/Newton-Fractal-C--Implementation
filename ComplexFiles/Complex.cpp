@@ -7,13 +7,13 @@ using namespace std;
 //***********************************************//
 //  Implementation of the Complex class          //
 //***********************************************//
-Complex& Complex::operator=(const Complex& cp)
-{
-	this->imag = cp.imag;
-	this->real = cp.real;
-	
-	return (*this);
-}
+//Complex& Complex::operator=(const Complex& cp)
+//{
+//	this->imag = cp.imag;
+//	this->real = cp.real;
+//	
+//	return (*this);
+//}
 
 double& Complex::operator[](const char* realOrnot)
 {
