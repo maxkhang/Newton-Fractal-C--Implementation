@@ -1,5 +1,8 @@
-# Newton-Fractal-Cpp--Implementation
+<p align="center">
+ <h1 align="center">Newton Fractal</h1>
+</p>
 
-This project is about making a fractal based on Newton's method of approximating/finding the roots of a function.
+## Introduction
 
+Here is my C++ code for Newton Fractal which is characterized by Newton's method
 
